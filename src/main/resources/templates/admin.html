@@ -5,6 +5,7 @@
 
     <meta charset="UTF-8">
     <title>Admin Panel</title>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
           rel="stylesheet">
     <link rel="stylesheet" th:href="@{/css/style.css}">
@@ -124,7 +125,7 @@
                                         data-firstname=${u.firstName},
                                         data-lastname=${u.lastName},
                                         data-age=${u.age},
-                                        data-admin=${#authorization.expression('hasRole(''ADMIN'')')}">
+                                        data-roles=${#strings.listJoin(#lists.toList(u.roles).![name], ',')}">
                                     Edit
                                 </button>
                             </td>
@@ -162,8 +163,18 @@
         <div class="modal-content">
 
             <form id="editForm"
+                  th:object="${userForm}"
                   th:action="@{/admin/save}"
                   method="post">
+
+                <div class="alert alert-danger"
+                     th:if="${#fields.hasErrors('*')}">
+
+                    <p th:each="err : ${#fields.errors('*')}"
+                       th:text="${err}">
+                    </p>
+
+                </div>
 
                 <div class="modal-header">
                     <h5 class="modal-title">
@@ -189,6 +200,12 @@
                                type="text"
                                name="username"
                                id="edit-username">
+
+                        <div class="text-danger"
+                             th:if="${#fields.hasErrors('username')}"
+                             th:errors="*{username}">
+                        </div>
+
                     </div>
 
                     <div class="mb-3">
@@ -198,6 +215,12 @@
                                type="text"
                                name="firstName"
                                id="edit-firstname">
+
+                        <div class="text-danger"
+                             th:if="${#fields.hasErrors('firstName')}"
+                             th:errors="*{firstName}">
+                        </div>
+
                     </div>
 
                     <div class="mb-3">
@@ -207,6 +230,12 @@
                                type="text"
                                name="lastName"
                                id="edit-lastname">
+
+                        <div class="text-danger"
+                             th:if="${#fields.hasErrors('lastName')}"
+                             th:errors="*{lastName}">
+                        </div>
+
                     </div>
 
                     <div class="mb-3">
@@ -216,6 +245,12 @@
                                type="number"
                                name="age"
                                id="edit-age">
+
+                        <div class="text-danger"
+                             th:if="${#fields.hasErrors('age')}"
+                             th:errors="*{age}">
+                        </div>
+
                     </div>
 
                     <div class="mb-3">
@@ -236,7 +271,7 @@
 
                         <div class="form-check">
 
-                            <input class="form-check-input"
+                            <input class="form-check-input role-checkbox"
                                    type="checkbox"
                                    name="roleIds"
                                    value="1"
@@ -251,7 +286,7 @@
 
                         <div class="form-check">
 
-                            <input class="form-check-input"
+                            <input class="form-check-input role-checkbox"
                                    type="checkbox"
                                    name="roleIds"
                                    value="2"
@@ -356,26 +391,40 @@
 <script>
     const editModal = document.getElementById('editModal')
 
-    editModal.addEventListener('show.bs.modal', function (event) {
 
-        const button = event.relatedTarget
+        editModal.addEventListener('show.bs.modal', function (event) {
 
-        document.getElementById('edit-id').value =
-            button.getAttribute('data-id')
+            const button = event.relatedTarget
 
-        document.getElementById('edit-username').value =
-            button.getAttribute('data-username')
+            document.getElementById('edit-id').value =
+                button.getAttribute('data-id')
 
-        document.getElementById('edit-firstname').value =
-            button.getAttribute('data-firstname')
+            document.getElementById('edit-username').value =
+                button.getAttribute('data-username')
 
-        document.getElementById('edit-lastname').value =
-            button.getAttribute('data-lastname')
+            document.getElementById('edit-firstname').value =
+                button.getAttribute('data-firstname')
 
-        document.getElementById('edit-age').value =
-            button.getAttribute('data-age')
+            document.getElementById('edit-lastname').value =
+                button.getAttribute('data-lastname')
 
-    })
+            document.getElementById('edit-age').value =
+                button.getAttribute('data-age')
+
+            const roles = button.getAttribute('data-roles')
+
+            document.querySelectorAll('.role-checkbox')
+                .forEach(cb => cb.checked = false)
+
+            if (roles && roles.includes('ROLE_ADMIN')) {
+                document.getElementById('adminRole').checked = true
+            }
+
+            if (roles && roles.includes('ROLE_USER')) {
+                document.getElementById('userRole').checked = true
+            }
+
+        })
 </script>
 <script>
 

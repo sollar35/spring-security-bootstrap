@@ -10,15 +10,27 @@ public class UserForm {
 
     @NotBlank(message = "Username is required")
     @Size(min = 3, max = 30, message = "Username must be 3-30 characters")
+    @Pattern(
+            regexp = "^[A-Za-z]+$",
+            message = "Username must contain only letters"
+    )
     private String username;
 
 
     private String password;
 
     @NotBlank(message = "First name is required")
+    @Pattern(
+            regexp = "^[A-Za-zА-Яа-яЁё\\-\\s']+$",
+            message = "First name must contain only letters"
+    )
     private String firstName;
 
     @NotBlank(message = "Last name is required")
+    @Pattern(
+            regexp = "^[A-Za-zА-Яа-яЁё\\-\\s']+$",
+            message = "Last name must contain only letters"
+    )
     private String lastName;
 
     @NotNull(message = "Age is required")

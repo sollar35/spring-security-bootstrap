@@ -29,6 +29,10 @@ public class AdminController {
     public String adminPage(Model model, Principal principal) {
         model.addAttribute("users", service.findAll());
         model.addAttribute("currentUsername", principal.getName());
+
+        model.addAttribute("userForm", new UserForm());
+        model.addAttribute("allRoles", roleRepository.findAll());
+
         return "admin";
     }
 
@@ -39,18 +43,25 @@ public class AdminController {
         return "create";
     }
 
-    @GetMapping("/edit")
-    public String editUser(@RequestParam Long id, Model model) {
-        model.addAttribute("userForm", service.toForm(id));
-        model.addAttribute("allRoles", roleRepository.findAll());
-        return "edit";
+//    @GetMapping("/edit")
+//    public String editUser(@RequestParam Long id, Model model) {
+//        model.addAttribute("userForm", service.toForm(id));
+//        model.addAttribute("allRoles", roleRepository.findAll());
+//        return "edit";
+//    }
+
+    @ModelAttribute("currentUsername")
+    public String currentUsername(Principal principal) {
+        return principal.getName();
     }
 
     @PostMapping("/save")
-    public String saveUser(@Valid @ModelAttribute("userForm") UserForm userForm,
-                           BindingResult bindingResult,
-                           @RequestParam(required = false) String newPassword,
-                           Model model) {
+    public String saveUser(
+            @Valid @ModelAttribute("userForm") UserForm userForm,
+            BindingResult bindingResult,
+            @RequestParam(required = false) String newPassword,
+            Model model,
+            Principal principal) {
 
         if(userForm.getAge() == null) {
             bindingResult.rejectValue("age", "age.empty", "Age is required");
@@ -74,9 +85,13 @@ public class AdminController {
         }
 
 
+        System.out.println(bindingResult.getAllErrors());
         if (bindingResult.hasErrors()) {
-            model.addAttribute("allRoles", roleRepository.findAll());
-            return userForm.getId() == null ? "create" : "edit";
+
+            model.addAttribute("users", service.findAll());
+            model.addAttribute("userForm", userForm);
+
+            return "admin";
         }
 
         if (userForm.getId() == null) {
