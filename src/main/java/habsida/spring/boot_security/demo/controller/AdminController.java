@@ -88,8 +88,13 @@ public class AdminController {
         System.out.println(bindingResult.getAllErrors());
         if (bindingResult.hasErrors()) {
 
+            model.addAttribute("allRoles", roleRepository.findAll());
+
+            if (userForm.getId() == null) {
+                return "create";
+            }
+
             model.addAttribute("users", service.findAll());
-            model.addAttribute("userForm", userForm);
 
             return "admin";
         }
