@@ -8,9 +8,11 @@ import habsida.spring.boot_security.demo.repository.RoleRepository;
 import habsida.spring.boot_security.demo.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.support.ResourceTransactionManager;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -24,6 +26,7 @@ public class UserServiceImpl implements UserService{
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.roleRepository = roleRepository;
+
     }
 
     private Set<Role> loadRoles(List<Long> roleIds) {
@@ -152,5 +155,14 @@ public class UserServiceImpl implements UserService{
         form.setNewPassword(null);
 
         return form;
+    }
+
+    public boolean existsByUsername(String username) {
+        return userRepository.existsByUsername(username);
+    }
+
+    public boolean existsByUsernameAndNotCurrentUser(String username, Long id) {
+        Optional<User> user = userRepository.findByUsername(username);
+        return user.isPresent() && !user.get().getId().equals(id);
     }
 }

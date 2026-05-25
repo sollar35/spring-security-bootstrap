@@ -10,12 +10,7 @@ public class UserForm {
 
     @NotBlank(message = "Username is required")
     @Size(min = 3, max = 30, message = "Username must be 3-30 characters")
-    @Pattern(
-            regexp = "^[A-Za-z]+$",
-            message = "Username must contain only letters"
-    )
     private String username;
-
 
     private String password;
 

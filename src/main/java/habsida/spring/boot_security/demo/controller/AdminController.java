@@ -84,6 +84,32 @@ public class AdminController {
             }
         }
 
+        if (userForm.getId() == null) {
+
+            if (service.existsByUsername(userForm.getUsername())) {
+
+                bindingResult.rejectValue(
+                        "username",
+                        "username.exists",
+                        "Username already exists"
+                );
+            }
+
+        } else {
+
+            if (service.existsByUsernameAndNotCurrentUser(
+                    userForm.getUsername(),
+                    userForm.getId()
+            )) {
+
+                bindingResult.rejectValue(
+                        "username",
+                        "username.exists",
+                        "Username already exists"
+                );
+            }
+        }
+
 
         System.out.println(bindingResult.getAllErrors());
         if (bindingResult.hasErrors()) {

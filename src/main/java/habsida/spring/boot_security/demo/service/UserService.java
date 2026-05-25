@@ -28,4 +28,8 @@ public interface UserService {
     void updateMyProfile(Long userId, UserProfileForm form);
 
     UserProfileForm toProfileForm(Long id);
+
+    boolean existsByUsername(String username);
+
+    boolean existsByUsernameAndNotCurrentUser(String username, Long id);
 }
